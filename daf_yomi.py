@@ -94,15 +94,14 @@ def date_to_number(date):
 
 def number_to_daf(number):
     """Turns the number representing the daf into the day's daf"""
-    
     # Store the value in case of an error
     original_number = number
-    
+
     if number < 0:
         raise Exception("Invalid number %d is < 0" % original_number)
 
     number = number % (TOTAL_BLATT)
-    
+
     for mesechta, blatt in MESECHTOS_BLATT.items():
         if number >= blatt:
             number -= blatt
@@ -110,7 +109,7 @@ def number_to_daf(number):
             return mesechta, number + 2
     else:
         raise Exception("It somehow couldn't find the blatt for number=%d ?" % original_number)
-        
+
 def dafstring_to_number(dafstring):
     """Takes a string in "Mesechta blatt" format and converts it to a number"""
     mesechta, blatt = dafstring.rsplit(' ', 1)
@@ -124,10 +123,17 @@ def dafstring_to_number(dafstring):
             number += v
     else:
         raise Exception("Dafstring '%s' is not a known mesechta!" % dafstring)
-    
+
 ###############################################################################
 # Utility functions
 ###############################################################################
+def daf_for_delta(ago):
+    """Calculates the daf for a number of days ago [so you can make chazara]"""
+    target = datetime.timedelta(days=ago)
+    today = datetime.datetime.today().date()
+    delta = today - target
+    mesachta, todays_daf = daf_for_date(delta)
+    return mesachta, todays_daf
 
 def daf_for_date(date):
     """Calculates the daf for a given datetime.date"""
@@ -159,23 +165,23 @@ def catch_up_by(current_position, blatt_per_day):
     return datetime.date.today() + datetime.timedelta(days)
 
 # Test code:
-def run_tests():
-    if number_to_daf(0) != (MESECHTOS_BLATT.keys()[0], 2):
-        raise Exception("Day 0 is Brachos!")
+# def run_tests():
+#     if number_to_daf(0) != (MESECHTOS_BLATT.keys()[0], 2):
+#         raise Exception("Day 0 is Brachos!")
+#
+#     if number_to_daf(63) != (MESECHTOS_BLATT.keys()[1], 2):
+#         raise Exception("Day 63 is Shabbos!")
+#
+#     # Daf for generic date
+#     if daf_for_date(datetime.date(2014, 4, 28)) != ('Beitzah', 29):
+#         raise Exception("Generic date test failed!")
+#
+#     # Text to number
+#     initial_number = 500
+#     dafstring = "%s %d" % number_to_daf(initial_number)
+#     number = dafstring_to_number(dafstring)
+#     if number != initial_number :
+#         raise Exception("Text to number failed! initial_number=%d, dafstring=%s, result=%d"
+#             % initial_number, dafstring, number)
 
-    if number_to_daf(63) != (MESECHTOS_BLATT.keys()[1], 2):
-        raise Exception("Day 63 is Shabbos!")
-    
-    # Daf for generic date
-    if daf_for_date(datetime.date(2014, 4, 28)) != ('Beitzah', 29):
-        raise Exception("Generic date test failed!")
-        
-    # Text to number
-    initial_number = 500
-    dafstring = "%s %d" % number_to_daf(initial_number)
-    number = dafstring_to_number(dafstring)
-    if number != initial_number :
-        raise Exception("Text to number failed! initial_number=%d, dafstring=%s, result=%d"
-            % initial_number, dafstring, number)
-
-run_tests()
+#run_tests()
